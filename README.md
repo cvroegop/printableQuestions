@@ -1,75 +1,40 @@
-# Nuxt Minimal Starter
+# Printable Questions
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Een kleine Nuxt-app om een lijst met vragen (bijvoorbeeld geknipt uit een WhatsApp-export) om te zetten in geprinte kaartjes, gegroepeerd per categorie en op kleur.
 
-## Setup
+## Hoe het werkt
 
-Make sure to install dependencies:
+De app werkt in drie stappen, bovenin als tabs:
+
+1. **Lijst** — plak een blok tekst met vragen (één per regel). WhatsApp-chatregels (`[12:34, 1-1-24] Naam: tekst`) worden automatisch herkend en er blijft alleen de berichttekst over. Duplicaten worden genegeerd.
+2. **Categoriseren** — maak categorieën aan met een naam en kleur, en sleep vragen vanuit "Ongesorteerd" naar de gewenste categorie.
+3. **Printen** — alle gecategoriseerde vragen worden als gekleurde kaartjes op A4-pagina's gezet (16 per pagina), klaar om te printen en uit te knippen.
+
+Alle data (vragen en categorieën) wordt opgeslagen in `localStorage` van de browser — er is geen backend of database.
+
+## Tech stack
+
+- [Nuxt 4](https://nuxt.com/) + Vue 3
+- [Nuxt UI](https://ui.nuxt.com/) voor de componenten
+
+## Lokale development
+
+Installeer de dependencies:
 
 ```bash
-# npm
 npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
 ```
 
-## Development Server
-
-Start the development server on `http://localhost:3000`:
+Start de development server op `http://localhost:3000`:
 
 ```bash
-# npm
 npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
-## Production
-
-Build the application for production:
+### Overige scripts
 
 ```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
+npm run build     # production build
+npm run generate  # statische export
+npm run preview   # preview van de production build
 ```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
