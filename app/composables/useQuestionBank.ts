@@ -51,7 +51,11 @@ export function useQuestionBank() {
 
   function addParsedQuestions(raw: string) {
     const texts = parseQuestions(raw)
+    const seen = new Set(questions.value.map((q) => q.text.trim().toLowerCase()))
     for (const text of texts) {
+      const key = text.trim().toLowerCase()
+      if (seen.has(key)) continue
+      seen.add(key)
       questions.value.push({ id: makeId(), text, categoryId: null })
     }
   }

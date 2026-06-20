@@ -41,20 +41,28 @@ function handlePrint() {
 <template>
   <div class="step-print">
     <div class="toolbar">
-      <h2 class="text-xl font-semibold">Stap 3 — Printen</h2>
+      <div>
+        <h2 class="text-xl font-semibold">Stap 3 — Printen</h2>
+        <p class="text-sm text-(--ui-text-muted)">
+          {{ pages.length }} {{ pages.length === 1 ? 'A4-pagina' : "A4-pagina's" }}
+        </p>
+      </div>
       <UButton label="Printen" @click="handlePrint" />
     </div>
 
     <p v-if="cards.length === 0" class="text-(--ui-text-muted)">Nog geen vragen om te printen.</p>
 
-    <div v-for="(page, pageIndex) in pages" :key="pageIndex" class="page">
-      <div
-        v-for="(card, cardIndex) in page"
-        :key="cardIndex"
-        class="card"
-        :style="{ backgroundColor: card.color }"
-      >
-        {{ card.text }}
+    <div v-for="(page, pageIndex) in pages" :key="pageIndex" class="page-wrap">
+      <p class="page-label">Pagina {{ pageIndex + 1 }} van {{ pages.length }}</p>
+      <div class="page">
+        <div
+          v-for="(card, cardIndex) in page"
+          :key="cardIndex"
+          class="card"
+          :style="{ backgroundColor: card.color }"
+        >
+          <span class="card-text">{{ card.text }}</span>
+        </div>
       </div>
     </div>
   </div>
@@ -68,6 +76,17 @@ function handlePrint() {
   margin-bottom: 16px;
 }
 
+.page-wrap {
+  margin-bottom: 24px;
+}
+
+.page-label {
+  margin: 0 0 6px;
+  text-align: center;
+  font-size: 13px;
+  color: #888;
+}
+
 .page {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -75,7 +94,7 @@ function handlePrint() {
   gap: 6px;
   width: 190mm;
   height: 277mm;
-  margin: 0 auto 24px;
+  margin: 0 auto;
   padding: 4mm;
   border: 1px solid #ddd;
 }
@@ -84,17 +103,34 @@ function handlePrint() {
   display: flex;
   align-items: center;
   justify-content: center;
-  text-align: center;
   padding: 4px;
-  font-size: 11px;
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 4px;
   overflow: hidden;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+.card-text {
+  display: block;
+  width: 56mm;
+  text-align: center;
+  font-size: 11px;
+  line-height: 1.25;
+  transform: rotate(-90deg);
 }
 
 @media print {
   .toolbar {
     display: none;
+  }
+
+  .page-label {
+    display: none;
+  }
+
+  .page-wrap {
+    margin-bottom: 0;
   }
 
   .page {
