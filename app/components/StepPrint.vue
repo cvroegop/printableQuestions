@@ -5,30 +5,45 @@ const CARDS_PER_PAGE = 16
 
 interface Card {
   text: string
-  color: string
 }
 
-const cards = computed<Card[]>(() => {
-  const result: Card[] = []
+interface Group {
+  categoryName: string
+  cards: Card[]
+}
+
+const groups = computed<Group[]>(() => {
+  const result: Group[] = []
   for (const category of categories.value) {
-    for (const question of questions.value) {
-      if (question.categoryId === category.id) {
-        result.push({ text: question.text, color: category.color })
-      }
+    const cards = questions.value
+      .filter(question => question.categoryId === category.id)
+      .map(question => ({ text: question.text }))
+    if (cards.length > 0) {
+      result.push({ categoryName: category.name, cards })
     }
   }
-  for (const question of questions.value) {
-    if (question.categoryId === null) {
-      result.push({ text: question.text, color: '#eeeeee' })
-    }
+  const uncategorized = questions.value
+    .filter(question => question.categoryId === null)
+    .map(question => ({ text: question.text }))
+  if (uncategorized.length > 0) {
+    result.push({ categoryName: 'Geen categorie', cards: uncategorized })
   }
   return result
 })
 
-const pages = computed<Card[][]>(() => {
-  const chunks: Card[][] = []
-  for (let i = 0; i < cards.value.length; i += CARDS_PER_PAGE) {
-    chunks.push(cards.value.slice(i, i + CARDS_PER_PAGE))
+interface Page {
+  categoryName: string
+  cards: Card[]
+}
+
+const cards = computed<Card[]>(() => groups.value.flatMap(group => group.cards))
+
+const pages = computed<Page[]>(() => {
+  const chunks: Page[] = []
+  for (const group of groups.value) {
+    for (let i = 0; i < group.cards.length; i += CARDS_PER_PAGE) {
+      chunks.push({ categoryName: group.categoryName, cards: group.cards.slice(i, i + CARDS_PER_PAGE) })
+    }
   }
   return chunks
 })
@@ -53,13 +68,14 @@ function handlePrint() {
     <p v-if="cards.length === 0" class="text-(--ui-text-muted)">Nog geen vragen om te printen.</p>
 
     <div v-for="(page, pageIndex) in pages" :key="pageIndex" class="page-wrap">
-      <p class="page-label">Pagina {{ pageIndex + 1 }} van {{ pages.length }}</p>
+      <p class="page-label">
+        {{ page.categoryName }} — pagina {{ pageIndex + 1 }} van {{ pages.length }}
+      </p>
       <div class="page">
         <div
-          v-for="(card, cardIndex) in page"
+          v-for="(card, cardIndex) in page.cards"
           :key="cardIndex"
           class="card"
-          :style="{ backgroundColor: card.color }"
         >
           <span class="card-text">{{ card.text }}</span>
         </div>
@@ -83,8 +99,9 @@ function handlePrint() {
 .page-label {
   margin: 0 0 6px;
   text-align: center;
-  font-size: 13px;
-  color: #888;
+  font-size: 14px;
+  font-weight: 600;
+  color: #444;
 }
 
 .page {
@@ -107,8 +124,6 @@ function handlePrint() {
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 4px;
   overflow: hidden;
-  print-color-adjust: exact;
-  -webkit-print-color-adjust: exact;
 }
 
 .card-text {
